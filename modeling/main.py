@@ -1,6 +1,9 @@
 import preprocessor.preprocessor as pp
 import pandas as pd
 from pathlib import Path
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
 import re
 
@@ -78,12 +81,36 @@ def main():
     gaia_proc = pp.GAIA.normalize_colnames(gaia_proc)
     nea_proc = pp.NEA.normalize_colnames(nea_proc)
 
-    # Removing columnns not intended for model
-    gaia_proc = gaia_proc.drop(columns = ["source_id", "Teff", "R", "spectype", "evolstage_flame"])
-    nea_proc = nea_proc.drop(columns = ["tic_id", "spectype", "Teff", "R"])
+    # gaia_proc.to_csv("gaia_out.csv", index=False)
+    # nea_proc.to_csv("nea_out.csv", index=False)
 
-    gaia_proc.to_csv("gaia_out.csv", index=False)
-    nea_proc.to_csv("nea_out.csv", index=False)
+    gaia_X = gaia_proc[["L", "met"]] 
+    gaia_M = gaia_proc[["M"]]
+    nea_X = nea_proc[["L", "met"]] 
+    nea_M = nea_proc[["M"]]
+
+    # Modeling with data from gaia dr3
+    #------------------------------------------------------
+    X_train, X_test, M_train, M_test = train_test_split(gaia_X, gaia_M, test_size=0.25, random_state=1)
+
+    model = LinearRegression()
+    model.fit(X_train, M_train)
+
+    M_pred = model.predict(X_test)
+
+    print(f"USING GAIA DR3 \n MSE={mean_squared_error(M_test, M_pred):.3f}, r2={r2_score(M_test, M_pred):.3f}") # MSE=0.001, r2=0.967
+
+    # Modeling with data from NEA
+    #------------------------------------------------------
+    X_train, X_test, M_train, M_test = train_test_split(nea_X, nea_M, test_size=0.25, random_state=1)
+
+    model = LinearRegression()
+    model.fit(X_train, M_train)
+
+    M_pred = model.predict(X_test)
+
+    print(f"USING NEA \n MSE={mean_squared_error(M_test, M_pred):.3f}, r2={r2_score(M_test, M_pred):.3f}")  # MSE=0.018, r2=0.751
+
 
 if __name__=="__main__":
     main()

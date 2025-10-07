@@ -1,7 +1,7 @@
 import preprocessor.preprocessor as pp
 import pandas as pd
 from pathlib import Path
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score, KFold
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
@@ -86,30 +86,24 @@ def main():
 
     gaia_X = gaia_proc[["L", "met"]] 
     gaia_M = gaia_proc[["M"]]
-    nea_X = nea_proc[["L", "met"]] 
-    nea_M = nea_proc[["M"]]
 
     # Modeling with data from gaia dr3
     #------------------------------------------------------
     X_train, X_test, M_train, M_test = train_test_split(gaia_X, gaia_M, test_size=0.25, random_state=1)
 
     model = LinearRegression()
-    model.fit(X_train, M_train)
 
+    model.fit(X_train, M_train)
     M_pred = model.predict(X_test)
 
-    print(f"USING GAIA DR3 \n MSE={mean_squared_error(M_test, M_pred):.3f}, r2={r2_score(M_test, M_pred):.3f}") # MSE=0.001, r2=0.967
+    cv = KFold(n_splits=5, shuffle=True, random_state=1)
 
-    # Modeling with data from NEA
-    #------------------------------------------------------
-    X_train, X_test, M_train, M_test = train_test_split(nea_X, nea_M, test_size=0.25, random_state=1)
+    r2 = np.mean(cross_val_score(model, gaia_X, gaia_M, scoring='r2', cv=cv))
+    mse = -np.mean(cross_val_score(model, gaia_X, gaia_M, scoring='neg_mean_squared_error', cv=cv))
+    
 
-    model = LinearRegression()
-    model.fit(X_train, M_train)
-
-    M_pred = model.predict(X_test)
-
-    print(f"USING NEA \n MSE={mean_squared_error(M_test, M_pred):.3f}, r2={r2_score(M_test, M_pred):.3f}")  # MSE=0.018, r2=0.751
+    print(f"USING GAIA DR3 regular split \n MSE={mean_squared_error(M_test, M_pred):.3f}, r2={r2_score(M_test, M_pred):.3f}") # MSE=0.001, r2=0.967
+    print(f"cross validation \n MSE={mse:.3f}, r2={r2:.3f}") # MSE=0.001, r2=0.974
 
 
 if __name__=="__main__":

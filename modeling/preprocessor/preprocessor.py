@@ -4,6 +4,9 @@ import re
 from astroquery.gaia import Gaia
 import pyvo
 from astropy.constants import M_sun, L_sun
+from astropy.table import Table
+from astropy.io.votable import from_table, writeto
+import time
 
 class GAIA:
     def __init__(self):
@@ -15,6 +18,32 @@ class GAIA:
         results = job.get_results()
         df = results.to_pandas()
 
+        return df
+    
+    @classmethod
+    def get_gaia_from_ids(cls, gaia_id_df: pd.DataFrame, upload_table_name: str = "gaia_ids", upload_file: str = "preprocessor/gaia_ids.xml"):
+        astropy_table = Table.from_pandas(gaia_id_df)
+        votable = from_table(astropy_table)
+        writeto(votable, upload_file)
+
+        query = f"""
+        SELECT
+            CAST(upload.gaia_dr3_id AS bigint) AS gaia_dr3_id,
+            astro.mass_flame,
+            astro.mh_gspphot,
+            astro.lum_flame,
+            astro.evolstage_flame,
+            astro.teff_gspphot,
+            astro.radius_gspphot,
+            astro.spectraltype_esphs
+        FROM tap_upload.{upload_table_name} AS upload
+        JOIN gaiadr3.astrophysical_parameters AS astro
+        ON CAST(upload.gaia_dr3_id AS bigint) = astro.source_id
+        """
+
+        job = Gaia.launch_job_async(query = query, upload_resource = upload_file, upload_table_name = upload_table_name, verbose=True)
+        results = job.get_results()
+        df = results.to_pandas()
         return df
 
     @classmethod
@@ -52,38 +81,47 @@ class NEA:
     #------------------------------------------------------
     @classmethod
     def _priority(cls, src: str):
-        if re.match(r"TICv8", src):
+        if pd.isna(src):
+            return 0
+        elif re.match(r"TICv8", src):
             return 3
         elif re.match(r"Gaia DR2", src):
             return 2
         else:
             year = re.search(r"\d+", src)
-            return 1 + int(year.group()) / 1e5
+            return 1 + int(year.group()) / 1e5 if year else 1
 
     @classmethod
-    def get_gaia_ids(cls, ids: np.ndarray):
+    def get_gaia_ids(cls, ids: np.ndarray, batch_size: int = 500):
         tap = pyvo.dal.TAPService("https://mast.stsci.edu/vo-tap/api/v0.1/tic/")
+        final_result = []
 
-        id_list = ", ".join(str(x) for x in ids)
+        for i in range(0, len(ids), batch_size):
+            batch = ids[i : i+batch_size]
+            id_list = ", ".join(str(x) for x in batch)
 
-        query = f"""
-        SELECT id AS tic_id, gaia AS gaia_dr3_id
-        FROM dbo.catalogrecord
-        WHERE ID IN ({id_list})
-        """
+            query = f"""
+            SELECT id AS tic_id, gaia AS gaia_dr3_id
+            FROM dbo.catalogrecord
+            WHERE ID IN ({id_list})
+            """
 
-        job = tap.submit_job(query=query)
-        job.run()
-        job.wait()
-
-        return job.fetch_result().to_table()
+            job = tap.submit_job(query=query)
+            job.run()
+            job.wait()
+            query_result = job.fetch_result().to_table().to_pandas()
+            final_result.append(query_result)
+            print(f"Batch {i//batch_size + 1} complete")
+            time.sleep(1)
+        
+        return pd.concat(final_result, ignore_index=True)
 
     @classmethod
     def process(cls, df: pd.DataFrame):
         FeH_sun = 10 ** (7.46 - 12)
 
-        ms_idx = df[df["st_spectype"].str.contains(" V", na=False)].index
-        df = df.iloc[ms_idx].dropna()
+        #ms_idx = df[df["st_spectype"].str.contains(" V", na=False)].index
+        #df = df.iloc[ms_idx].dropna()
 
         df["P"] = df["st_refname"].apply(NEA._priority)
         df = df.sort_values(["tic_id", "P"], ascending=[True, False])

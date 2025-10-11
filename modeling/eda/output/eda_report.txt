@@ -1,0 +1,66 @@
+===== EDA Report: =====
+
+Summary Statistics (Numerical Variables):
+
+                M         met           L         Teff           R
+count  498.000000  498.000000  498.000000   498.000000  498.000000
+mean    30.269871   -4.675249   26.478364  5466.073730    1.059722
+std      0.103321    0.388031    0.506336   803.266907    0.351768
+min     29.995735   -8.227300   25.217614  3380.836182    0.501700
+25%     30.207051   -4.845225   26.161908  5024.753296    0.804675
+50%     30.270092   -4.652900   26.490414  5542.719727    0.977850
+75%     30.333597   -4.467125   26.823815  5964.863525    1.223125
+max     30.665496   -3.744600   28.143303  9757.480469    2.805900
+
+Summary Statistics (Categorical Variables):
+
+       spectype
+count       498
+unique        5
+top           G
+freq        200
+
+Missing Values Analysis:
+
+Columns with missing values:
+Series([], dtype: int64)
+Rows with missing values:
+Rows with at least one missing value: 0
+Rows with all values missing: 0
+Rows with no missing values: 498
+
+Z-Score Based Outlier Detection (threshold = 3.0):
+
+Column: M
+             M   Z-score
+149  30.665496  3.832924
+799  30.598445  3.183319
+Column: met
+        met   Z-score
+45  -7.0358 -6.089519
+366 -6.1525 -3.810868
+389 -6.1016 -3.679561
+792 -8.2273 -9.163234
+882 -7.0263 -6.065012
+Column: L
+             L   Z-score
+149  28.143303  3.291516
+Column: Teff
+             Teff   Z-score
+149   9757.480469  5.347814
+460   8034.987305  3.201298
+565   8258.403320  3.479712
+799   8811.203125  4.168593
+1097  8281.330078  3.508282
+Column: R
+           R   Z-score
+117   2.1420  3.079775
+682   2.1915  3.220634
+792   2.1349  3.059572
+840   2.4057  3.830171
+885   2.8059  4.968997
+925   2.2805  3.473896
+952   2.2481  3.381698
+1092  2.4751  4.027658
+
+

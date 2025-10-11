@@ -6,6 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 from scipy.stats import zscore
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 def explore(df: pd.DataFrame, numerical_columns: list[str], categorical_columns: list[str], output_dir: str, hue_column: str | None = None) -> None:
     log_path = os.path.join(output_dir, f"eda_report.txt")
@@ -18,6 +20,7 @@ def explore(df: pd.DataFrame, numerical_columns: list[str], categorical_columns:
             identify_outliers(df[numerical_columns], os.path.join(output_dir, "outliers"))
             plot_single_distributions(df[numerical_columns], df[categorical_columns], os.path.join(output_dir, "single_distributions"))
             plot_pairwise_relationships(df[numerical_columns + [hue_column]], output_dir, hue_column)
+            plot_multivariate(df, df[numerical_columns], output_dir, hue_column)
             check_coolineraity(df[numerical_columns], output_dir)
             print("\n")
 
@@ -102,10 +105,10 @@ def plot_single_distributions(df_numerical: pd.DataFrame, df_categorical: pd.Dat
         plt.savefig(os.path.join(output_dir, f"categorical_{column}.png"))
         plt.show()
 
-def plot_pairwise_relationships(df: pd.DataFrame, output_dir: str, hue_column: str | None = None)  -> None:
-    wong_palette = ["#000000", "#e69f00", "#56b4e9", "#009e73", "#f0e442", "#0072b2", "#d55e00", "#cc79a7"]
+def plot_pairwise_relationships(df: pd.DataFrame, output_dir: str, hue_column: str | None = None) -> None:
+    palette = _get_colors(df[hue_column].dropna().unique())
 
-    sns.pairplot(df, hue=hue_column, palette=wong_palette, plot_kws={'s': 10, 'alpha': 0.8})
+    sns.pairplot(df, hue=hue_column, palette=palette, plot_kws={'s': 10, 'alpha': 0.8})
     plt.suptitle(f"Pairwise Relationships", y=1.02)
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, f"pairplot.png"))
@@ -115,29 +118,29 @@ def plot_pairwise_relationships(df: pd.DataFrame, output_dir: str, hue_column: s
     fig = plt.figure(figsize=(12,10))
 
     ax = plt.subplot(2, 2, 1)
-    sns.scatterplot(data=df, x="L", y="M", hue=hue_column, palette=wong_palette, ax=ax)
+    sns.scatterplot(data=df, x="L", y="M", hue=hue_column, palette=palette, ax=ax)
     sns.regplot(data=df, x="L", y="M", scatter=False, line_kws={'color': "#d55e00", 'linewidth': 1.5}, ax=ax, ci=None)
     plt.title(f"Mass vs Luminosity")
     plt.legend('',frameon=False)
 
     ax = plt.subplot(2, 2, 2)
-    sns.scatterplot(data=df, x="Teff", y="L", hue=hue_column, palette=wong_palette, ax=ax)
+    sns.scatterplot(data=df, x="Teff", y="L", hue=hue_column, palette=palette, ax=ax)
     sns.regplot(data=df, x="Teff", y="L", scatter=False, line_kws={'color': "#d55e00", 'linewidth': 1.5}, ax=ax, ci=None)
     plt.gca().invert_xaxis()
     plt.title(f"Effective Temperature vs Luminosity (HR diagram)")
     plt.legend('',frameon=False)
 
     ax = plt.subplot(2, 2, 3)
-    sns.scatterplot(data=df, x="R", y="M", hue=hue_column, palette=wong_palette, ax=ax)
+    sns.scatterplot(data=df, x="R", y="M", hue=hue_column, palette=palette, ax=ax)
     sns.regplot(data=df, x="R", y="M", scatter=False, line_kws={'color': "#d55e00", 'linewidth': 1.5}, ax=ax, ci=None)
     plt.title(f"Radius vs Mass")
     plt.legend('',frameon=False)
 
     ax = plt.subplot(2, 2, 4)
-    sns.scatterplot(data=df, x="met", y="M", hue=hue_column, palette=wong_palette, ax=ax)
+    sns.scatterplot(data=df, x="met", y="M", hue=hue_column, palette=palette, ax=ax)
     for i, spectype in enumerate(df[hue_column].dropna().unique()):
         subset = df[df[hue_column] == spectype]
-        sns.regplot(data=subset, x="met", y="M", scatter=False, line_kws={'color': wong_palette[i % len(wong_palette)], 'linewidth': 1.5}, ax=ax, ci=None)
+        sns.regplot(data=subset, x="met", y="M", scatter=False, line_kws={'color': palette[i % len(palette)], 'linewidth': 1.5}, ax=ax, ci=None)
     plt.title(f"Metallicity vs Mass")
     plt.legend('',frameon=False)
     
@@ -145,6 +148,69 @@ def plot_pairwise_relationships(df: pd.DataFrame, output_dir: str, hue_column: s
     handles, labels = plt.gca().get_legend_handles_labels()
     fig.legend(handles, labels, loc='upper center', ncol=4)
     plt.savefig(os.path.join(output_dir, f"pairwise_with_regression.png"))
+    plt.show()
+
+def plot_multivariate(df: pd.DataFrame, df_numerical: pd.DataFrame, output_dir: str, hue_column: str | None = None) -> None:
+    _plot_3d_scatter(df, ["Teff", "L", "M"], output_dir, hue_column)
+    _plot_3d_scatter(df, ["L", "M", "met"], output_dir, hue_column, 2)
+    _plot_pca_projection(df, df_numerical, output_dir, hue_column)
+
+def _plot_3d_scatter(df: pd.DataFrame, list_xyz: list[str], output_dir: str, hue_column: str | None = None, file_suffix: int = 1) -> None:
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection="3d")
+
+    if hue_column:
+        categories= df[hue_column].dropna().unique()
+        palette = _get_colors(categories)
+    
+    for i, category in enumerate(categories):
+        subset = df[df[hue_column] == category]
+        ax.scatter(
+            subset[list_xyz[0]],
+            subset[list_xyz[1]],
+            subset[list_xyz[2]],
+            label=category,
+            color=palette[i],
+            s=30,
+            alpha=0.7
+        )
+    
+    ax.set_xlabel(f"{list_xyz[0]}")
+    ax.set_ylabel(f"{list_xyz[1]}")
+    ax.set_zlabel(f"{list_xyz[2]}")
+    ax.set_title(f"{list_xyz[0]} vs {list_xyz[1]} vs {list_xyz[2]} Colored by {hue_column}")
+    ax.legend(title=hue_column, bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, f"3d_scatter_plot_{file_suffix}.png"))
+    plt.show()
+
+def _plot_pca_projection(df: pd.DataFrame, df_numerical: pd.DataFrame, output_dir: str, hue_column: str | None = None) -> None:
+    print(f"\nPCA Explained Variance:\n")
+    scaler = StandardScaler()
+    data_scaled = scaler.fit_transform(df_numerical)
+
+    pca = PCA(n_components=2)
+    principal_components = pca.fit_transform(data_scaled)
+    pc_df = pd.DataFrame(data=principal_components, columns=["PC1", "PC2"], index=df_numerical.index)
+
+    pca_loadings = pd.DataFrame(pca.components_.T, index=df_numerical.columns, columns=['PC1', 'PC2'])
+
+    print(f"PC1: {pca.explained_variance_ratio_[0]}")
+    print(f"PC2: {pca.explained_variance_ratio_[1]}")
+    print("PCA Loadings:\n", pca_loadings)
+
+    if hue_column:
+        pc_df[hue_column] = df[hue_column]
+        palette = _get_colors(df[hue_column].dropna().unique())
+    
+    plt.figure(figsize=(10, 8))
+    sns.scatterplot(data=pc_df, x="PC1", y="PC2", hue=hue_column, palette=palette, alpha=0.7, s=40)
+    plt.title("PCA Projection (2D)", fontsize=14)
+    plt.xlabel(f"PC1 ({pca.explained_variance_ratio_[0]:.1%} variance)")
+    plt.ylabel(f"PC2 ({pca.explained_variance_ratio_[1]:.1%} variance)")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, "pca_projection.png"))
     plt.show()
 
 def check_coolineraity(df: pd.DataFrame, output_dir: str) -> None:
@@ -185,3 +251,8 @@ def compare_distributions(df: pd.DataFrame, features: list[str], output_dir: str
     g.figure.suptitle("NEA vs Gaia Feature Distributions", fontsize=16)
     plt.savefig(os.path.join(output_dir, f"compare_before_join.png"))
     plt.show()
+
+def _get_colors(categories: list[str]):
+    wong_palette = ["#000000", "#e69f00", "#56b4e9", "#009e73", "#f0e442", "#0072b2", "#d55e00", "#cc79a7"]
+    needed = len(categories)
+    return wong_palette[:needed]

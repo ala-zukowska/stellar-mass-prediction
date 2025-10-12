@@ -42,6 +42,6 @@ def clean_joined(df: pd.DataFrame) -> pd.DataFrame:
         "met_combined": "met"
     })
 
-    df = remove_outliers(df)
+    df = df[df["tic_id"]!="TIC 125843782"] #This star is not in main sequence
 
     return df

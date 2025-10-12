@@ -60,4 +60,4 @@ def create_plot(L, met):
     plt.show()
 
 if __name__=="__main__":
-    create_plot(10,20)
+    create_plot(20,1)

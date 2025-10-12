@@ -1,0 +1,17 @@
+Luminosity: Total outgoing power radiated by a star. Usually expressed in solar luminosities (1 L_sun = 3.828 * 10^26 W).
+
+Metallicity (Fe/H): Ratio of atoms of iron to atoms of hydrogen within a star. Expressed on a logarithmic scale.
+
+Mass: The mass of a star. Expressed in solar masses (1 M_sun = 1.99 * 10^30 kg).
+
+Radius: The radius of a star. Expressed in solar radii (1 R_sun = 6.96 * 10^8 m).
+
+Teff: The estimated surface temperature of a star derived from a black body approximation.
+
+Spectral classsification: Classification of stars based on their surface temperature. The industry standard Harvard classification includes
+the following classes (descending): O, B, A, F, G, K, M.
+
+Main sequence star: A relatively stable star that produces energy through hydrogen fusion. This is the longest lasting phase
+in a stellar life cycle.
+
+Mass-luminosity relation: An empirically established relationship between the mass and luminosity of a main sequence star.

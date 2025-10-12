@@ -14,6 +14,17 @@ class GAIA:
 
     @classmethod
     def get_gaia(cls, query:str):
+        """ documentation: https://gea.esac.esa.int/archive/documentation/GDR3/Gaia_archive/chap_datamodel/sec_dm_astrophysical_parameter_tables/ssec_dm_astrophysical_parameters.html
+
+        astro.source_id - ID in Gaia
+        astro.radius_gspphot - Radius
+        astro.teff_gspphot - Effective temperature
+        astro.mh_gspphot - Metallicity [Fe/H]
+        astro.mass_flame - Mass
+        astro.lum_flame - Luminosity
+        astro.evolstage_flame - Evolutionary stage (main sequence 100-360)
+        astro.spectraltype_esphs - Spectral type (to classify into mass ranges) """
+        
         job = Gaia.launch_job_async(query)
         results = job.get_results()
         df = results.to_pandas()

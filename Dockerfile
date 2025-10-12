@@ -7,6 +7,12 @@ COPY app/frontend/package*.json ./
 RUN npm install
 
 COPY app/frontend/ .
+
+COPY modeling/eda/output/*.png /app/frontend/src/assets/
+COPY modeling/eda/output/single_distributions/*.png /app/frontend/src/assets/
+
+COPY ref.json /app/frontend/src
+
 RUN npm run build
 
 FROM python:3.13-slim AS backend

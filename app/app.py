@@ -3,6 +3,8 @@ from flask import Flask, request, jsonify
 app = Flask(__name__, static_folder="frontend/dist", static_url_path="/")
 
 @app.route("/", methods=["GET"])
+@app.route("/predict", methods=["GET"])
+@app.route("/graphs", methods=["GET"])
 def index():
     return app.send_static_file("index.html")
 

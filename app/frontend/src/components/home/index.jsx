@@ -1,3 +1,4 @@
+import references from "../../ref.json"
 
 const homeStyle = {
     display: 'flex',
@@ -18,6 +19,39 @@ const contentStyle = {
 
 const columnStyle = {
     padding: '2em'
+}
+
+
+const  References = () => {
+  return (
+    <div>
+        <h2>References</h2>
+        <ul>
+        {references.map((ref) => {
+          const authors = ref.author.join(", ");
+          const title = ref.title;
+          const journalInfo = ref.journal
+            ? `${ref.journal}${ref.volume ? `, ${ref.volume}` : ""}${ref.pages ? `, ${ref.pages}` : ""}`
+            : "";
+          const year = ref.year ? `(${ref.year})` : "";
+          const doiLink = ref.url || (ref.doi ? `https://doi.org/${ref.doi}` : null);
+
+          return (
+            <p>
+                <li key={ref.id}>
+                {authors}. <strong>{title}</strong>. {journalInfo} {year}{" "}
+                {doiLink && (
+                    <a href={doiLink} target="_blank" rel="noopener noreferrer">
+                    [link]
+                    </a>
+                )}
+                </li>
+            </p>
+          );
+        })}
+        </ul>
+    </div>
+  );
 }
 
 const Home = () => {
@@ -42,6 +76,7 @@ const Home = () => {
                     Some discussion of the results
                 </div>
             </div>
+            <References />
         </div>
     )
 }

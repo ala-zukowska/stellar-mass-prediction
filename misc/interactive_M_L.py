@@ -14,7 +14,6 @@ def create_plot(L, met):
     reg_coef = (24.49554961, 0.21843771, 0.00115995)   # From modeling on the same df: (intercept, luminosity, metallicity)
 
     L_scaled = np.log10(L * L_sun.value)
-    print(L_scaled)
     M_pred = reg_coef[0] + reg_coef[1] * L_scaled + reg_coef[2] * met
     M_pred = 10**M_pred / M_sun.value
 

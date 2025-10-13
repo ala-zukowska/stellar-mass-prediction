@@ -2,7 +2,7 @@
 
 const Def = () => {
     return (
-        <div style={{ backgroundColor: 'lightGray' }}>
+        <div style={{ backgroundColor: 'lightGray', padding: '1em' }}>
             <h1>Definitions</h1>
             <div>
                 <h2>Luminosity: </h2>

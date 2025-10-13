@@ -48,27 +48,36 @@ const Predict = () => {
         <div style={inputStyle}>
         <h3>Input values to predict stellar mass</h3>
 
-        <form onSubmit={handleSubmit}>
-            <TextField
-                label="Luminosity"
-                variant="standard"
-                type="number"
-                value={luminosity}
-                onChange={(e) => setLuminosity(e.target.value)}
-                required
-            />
-            <TextField
-                label="Metallicity"
-                variant="standard"
-                type="number"
-                value={metallicity}
-                onChange={(e) => setMetallicity(e.target.value)}
-                required
-            />
-            <br />
-            <Button variant="contained" type="submit" disabled={loading}>
-                {loading ? "Predicting..." : "Predict"}
-            </Button>
+        <form onSubmit={handleSubmit}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "1em",
+        }}>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+                <TextField
+                    label="Luminosity"
+                    variant="standard"
+                    type="number"
+                    value={luminosity}
+                    onChange={(e) => setLuminosity(e.target.value)}
+                    required
+                />
+                <TextField
+                    label="Metallicity"
+                    variant="standard"
+                    type="number"
+                    value={metallicity}
+                    onChange={(e) => setMetallicity(e.target.value)}
+                    required
+                />
+            </div>
+            <div>
+                <Button variant="contained" type="submit" disabled={loading}>
+                    {loading ? "Predicting..." : "Predict"}
+                </Button>
+            </div>
         </form>
 
         {result !== null && (

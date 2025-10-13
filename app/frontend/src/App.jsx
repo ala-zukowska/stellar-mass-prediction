@@ -3,6 +3,7 @@ import { Routes, Route, Link } from 'react-router-dom'
 import Predict from './components/predict'
 import Home from './components/home'
 import Graphs from './components/graphs'
+import Def from './components/definitions'
 
 const navBarStyle = {
   display: 'flex',
@@ -40,6 +41,9 @@ const NavBar = ({ style }) => {
         <Link to="/graphs">
           <Button variant="contained">Graphs</Button>
         </Link>
+        <Link to="/definitions">
+          <Button variant="contained">Definitions</Button>
+        </Link>
       </div>
     </div>
   )
@@ -58,6 +62,7 @@ const App = () => {
       <Route path="/" element={<Home />}></Route>
       <Route path="/graphs" element={<Graphs />}></Route>
       <Route path="/predict" element={<Predict />}></Route>
+      <Route path="/definitions" element={<Def />}></Route>
     </Routes>
     </>
   )

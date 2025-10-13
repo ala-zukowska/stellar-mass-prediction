@@ -7,7 +7,8 @@ const inputStyle = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '4em',
-    border: 'solid gray'
+    border: 'solid gray',
+    backgroundColor: 'lightgray'
 }
 
 const Predict = () => {

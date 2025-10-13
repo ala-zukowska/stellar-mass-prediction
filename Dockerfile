@@ -26,6 +26,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
+COPY modeling/linear_model.pkl /app
+
 ENV PORT=8080
 EXPOSE 8080
 

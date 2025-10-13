@@ -1,10 +1,15 @@
 from flask import Flask, request, jsonify
+import joblib
+import pandas as pd
 
 app = Flask(__name__, static_folder="frontend/dist", static_url_path="/")
+
+model = joblib.load("linear_model.pkl")
 
 @app.route("/", methods=["GET"])
 @app.route("/predict", methods=["GET"])
 @app.route("/graphs", methods=["GET"])
+@app.route("/definitions", methods=["GET"])
 def index():
     return app.send_static_file("index.html")
 
@@ -16,7 +21,8 @@ def predict():
 
     if luminosity is None or metallicity is None:
         return jsonify({"error": "Missing parameters"}), 400
+    
+    X_new = pd.DataFrame([[luminosity, metallicity]], columns=["L", "met"])
+    prediction = model.predict(X_new)
 
-    # Add linear regression model later
-    prediction = float(luminosity) * float(metallicity)
-    return jsonify({"prediction": prediction})
+    return jsonify({"prediction": float(prediction[0])})

@@ -7,6 +7,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
 import re
+import joblib
 
 # Helper function to process ids for cross-referencing
 def clean_ids(ids:np.ndarray):
@@ -72,6 +73,8 @@ def main():
 
     model.fit(X_train, M_train)
     M_pred = model.predict(X_test)
+
+    joblib.dump(model, "linear_model.pkl")
 
     cv = KFold(n_splits=5, shuffle=True, random_state=1)
 

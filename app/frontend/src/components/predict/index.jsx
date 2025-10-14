@@ -57,7 +57,7 @@ const Predict = () => {
         }}>
             <div style={{ display: "flex", flexDirection: "row" }}>
                 <TextField
-                    label="Luminosity"
+                    label="Luminosity (L☉)"
                     variant="standard"
                     type="number"
                     value={luminosity}
@@ -65,7 +65,7 @@ const Predict = () => {
                     required
                 />
                 <TextField
-                    label="Metallicity"
+                    label="Metallicity (Fe/H)"
                     variant="standard"
                     type="number"
                     value={metallicity}

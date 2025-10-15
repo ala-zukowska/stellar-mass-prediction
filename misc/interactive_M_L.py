@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 import mplcursors
 
+# dimensions: [L]=L_sun, [met]=log(n_Fe/n_H)
 def create_plot(L, met):
     dir = Path(__file__).resolve().parent
     path = dir / "../modeling/preprocessor/output/gaia_out.csv"
@@ -60,4 +61,4 @@ def create_plot(L, met):
     plt.show()
 
 if __name__=="__main__":
-    create_plot(20,1)
+    create_plot(1.5,-3)

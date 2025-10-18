@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Button, TextField, Typography } from "@mui/material"
+import Plot from "react-plotly.js"
 
 const inputStyle = {
     display: 'flex',
@@ -14,15 +15,17 @@ const inputStyle = {
 const Predict = () => {
     const [luminosity, setLuminosity] = useState("")
     const [metallicity, setMetallicity] = useState("")
-    const [result, setResult] = useState(null)
+    const [data, setData] = useState(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+    const [plot, setPlot] = useState(null)
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setLoading(true)
         setError(null)
-        setResult(null)
+        setData(null)
+        setPlot(null)
         try {
             const response = await fetch("/predict", {
                 method: "POST",
@@ -36,12 +39,13 @@ const Predict = () => {
         });
         if (!response.ok) throw new Error("Server error");
 
-        const data = await response.json();
-        setResult(data.prediction);
+        const d = await response.json()
+        setData(d)
+        setPlot(true)
         } catch (err) {
-            setError("Failed to get prediction");
+            setError("Failed to get prediction")
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     }
     return (
@@ -80,9 +84,9 @@ const Predict = () => {
             </div>
         </form>
 
-        {result !== null && (
+        {data !== null && (
             <Typography variant="h6" style={{ marginTop: "1em" }}>
-                Predicted Stellar Mass: {result}
+                Predicted Stellar Mass: {data.predicted.M}
             </Typography>
         )}
 
@@ -91,6 +95,40 @@ const Predict = () => {
                 {error}
             </Typography>
         )}
+
+        {plot && <Plot
+            data={[
+                {
+                    x: data.stars.map(s => s.M),
+                    y: data.stars.map(s => s.L),
+                    mode: "markers",
+                    marker: { color: "black", size: 5 },
+                    name: "Stars"
+                },
+                {
+                    x: [data.predicted.plot_M],
+                    y: [data.predicted.L],
+                    mode: "markers",
+                    marker: { color: "red", size: 10 },
+                    name: "Predicted"
+                },
+                {
+                    x: data.labels.map(s => s.M),
+                    y: data.labels.map(s => s.L),
+                    mode: "markers+text",
+                    text: data.labels.map(s => s.Name),
+                    textposition: "top center",
+                    marker: { color: "blue", size: 8 },
+                    name: "Labeled stars",
+                    hovertext: data.labels.map(s => s.Info)
+                }
+            ]}
+            layout={{
+                xaxis: { title: "M (M☉)" },
+                yaxis: { title: "L (L☉)", type: "log" },
+                title: "Mass-Luminosity Relation"
+            }}
+        />}
         </div>
     )
 }

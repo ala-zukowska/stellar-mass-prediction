@@ -27,7 +27,7 @@ def predict():
 
     X_new = pd.DataFrame([[log_watts, metallicity]], columns=["L", "met"])
     prediction = model.predict(X_new)
-    plot_pred = 10**(float(prediction[0])) / M_sun.value
+    prediction = 10**(float(prediction[0])) / M_sun.value
 
     df = pd.read_csv("joined_out.csv")
     df = df.drop(columns=["met", "Teff", "R", "spectype"])
@@ -50,5 +50,5 @@ def predict():
     return jsonify({
         "stars": df[["M", "L"]].to_dict(orient="records"),
         "labels": label_df.to_dict(orient="records"),
-        "predicted": {"M": float(prediction[0]), "L": luminosity, "plot_M": plot_pred}
+        "predicted": {"M": prediction, "L": luminosity }
         })

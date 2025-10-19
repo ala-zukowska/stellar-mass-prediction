@@ -86,7 +86,7 @@ const Predict = () => {
 
         {data !== null && (
             <Typography variant="h6" style={{ marginTop: "1em" }}>
-                Predicted Stellar Mass: {data.predicted.M}
+                Predicted Stellar Mass: {data.predicted.M} M☉
             </Typography>
         )}
 
@@ -96,7 +96,9 @@ const Predict = () => {
             </Typography>
         )}
 
-        {plot && <Plot
+        {plot &&
+        <div style={{ width: "100%", height: "500px", padding: "1em" }}>
+          <Plot
             data={[
                 {
                     x: data.stars.map(s => s.M),
@@ -106,7 +108,7 @@ const Predict = () => {
                     name: "Stars"
                 },
                 {
-                    x: [data.predicted.plot_M],
+                    x: [data.predicted.M],
                     y: [data.predicted.L],
                     mode: "markers",
                     marker: { color: "red", size: 10 },
@@ -124,11 +126,16 @@ const Predict = () => {
                 }
             ]}
             layout={{
-                xaxis: { title: "M (M☉)" },
-                yaxis: { title: "L (L☉)", type: "log" },
-                title: "Mass-Luminosity Relation"
+                autosize: true,
+                margin: { l: 80, r: 40, b: 70, t: 70 },
+                xaxis: { title: { text: "Mass (M☉)" }, automargin: true },
+                yaxis: { title: { text: "Luminosity (L☉)" }, type: "log", automargin: true },
+                title: { text: "Mass-Luminosity relation"}
             }}
-        />}
+            useResizeHandler={true}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </div>}
         </div>
     )
 }

@@ -97,7 +97,7 @@ const Predict = () => {
         )}
 
         {plot &&
-        <div style={{ width: "100%", height: "500px", padding: "1em" }}>
+        <div style={{ width: "80%", height: "500px", padding: "1em" }}>
           <Plot
             data={[
                 {

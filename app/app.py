@@ -50,5 +50,5 @@ def predict():
     return jsonify({
         "stars": df[["M", "L"]].to_dict(orient="records"),
         "labels": label_df.to_dict(orient="records"),
-        "predicted": {"M": float(prediction[0]), "L": log_watts, "plot_M": plot_pred}
+        "predicted": {"M": float(prediction[0]), "L": luminosity, "plot_M": plot_pred}
         })

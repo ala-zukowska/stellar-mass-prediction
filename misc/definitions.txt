@@ -1,7 +1,8 @@
 Luminosity: Total outgoing power radiated by a star. Usually expressed in solar luminosities (1 L_sun = 3.828 * 10^26 W).
 
 Metallicity (Fe/H): Ratio of atoms of iron to atoms of hydrogen within a star. Expressed on a logarithmic scale. The metallicity of the Sun is approximately
--4.54, meaning that the ratio of iron to hydrogen is approximately 10^-4.54 in terms of individual atoms.
+-4.54, meaning that the ratio of iron to hydrogen is approximately 10^-4.54 in terms of individual atoms. The metallicity of main sequence stars usually falls
+between around -4 to -7, although extremely old stars originating from the early days of the universe can have values far below the lower bound.
 
 Mass: The mass of a star. Expressed in solar masses (1 M_sun = 1.99 * 10^30 kg).
 

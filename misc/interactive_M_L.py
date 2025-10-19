@@ -61,4 +61,4 @@ def create_plot(L, met):
     plt.show()
 
 if __name__=="__main__":
-    create_plot(1.5,-3)
+    create_plot(1,-4)

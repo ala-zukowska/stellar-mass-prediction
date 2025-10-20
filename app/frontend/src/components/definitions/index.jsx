@@ -10,7 +10,9 @@ const Def = () => {
             </div>
             <div>
                 <h2>Metallicity (Fe/H): </h2>
-                Ratio of atoms of iron to atoms of hydrogen within a star. Expressed on a logarithmic scale.
+                Ratio of atoms of iron to atoms of hydrogen within a star. Expressed on a logarithmic scale. The metallicity of the Sun is approximately
+                -4.54, meaning that the ratio of iron to hydrogen is approximately 10^-4.54 in terms of individual atoms. The metallicity of main sequence stars usually falls
+                between around -4 to -7, although extremely old stars originating from the early days of the universe can have values far below the lower bound.
             </div>
             <div>
                 <h2>Mass:</h2>

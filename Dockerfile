@@ -10,6 +10,7 @@ COPY app/frontend/ .
 
 COPY modeling/eda/output/*.png /app/frontend/src/assets/
 COPY modeling/eda/output/single_distributions/*.png /app/frontend/src/assets/
+COPY modeling/eda/output/interactive/*.html /app/frontend/public/
 COPY ref.json /app/frontend/src
 
 RUN npm run build

@@ -55,11 +55,13 @@ def main():
     joined_df = pp.join_dbs(nea_proc, gaia_proc)
     eda.compare_distributions(joined_df, features=["M", "L", "Teff", "R", "met"], output_dir="eda/output")
     eda.check_missing(joined_df)
+    eda.compare_distributions_plotly(joined_df, features=["M", "L", "Teff", "R", "met"], output_dir="eda/output/interactive")
 
     joined_df = pp.clean_joined(joined_df)
     joined_df.to_csv("preprocessor/output/joined_out.csv", index=False)
 
     eda.explore(joined_df, ["M", "met", "L", "Teff", "R"], ["spectype"], output_dir="eda/output", hue_column="spectype")
+    eda.create_graphs(joined_df, ["M", "met", "L", "Teff", "R"], ["spectype"], output_dir="eda/output/interactive", hue_column="spectype")
 
     #Modelling
     #joined_path = dir / "preprocessor/output/joined_out.csv"

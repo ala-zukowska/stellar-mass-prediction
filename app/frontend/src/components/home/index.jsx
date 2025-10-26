@@ -13,12 +13,10 @@ const homeStyle = {
 const contentStyle = {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'left',
-    gap: '10em'
-}
-
-const columnStyle = {
-    padding: '2em'
+    justifyContent: 'center',
+    fontSize: 24,
+    lineHeight: '1.5',
+    padding: '1em 6em'
 }
 
 
@@ -62,21 +60,14 @@ const Home = () => {
                 This is a group project made on the <a href="https://studies.helsinki.fi/courses/course-unit/otm-f1abc596-92c2-43ec-b42e-dc8114b5247d" target="_blank">Introduction to Data Science</a> course
                 by the University of Helsinki.
             </p>
-            <p style={{ fontSize: 18 }}>
-                This website provides a user-interface to our linear regression model that predicts the stellar mass of a star. The input variables of the model are 
-                the metallicity and luminosity of the star.
-            </p>
             <div style={contentStyle}>
-                <div style={columnStyle}>
-                    <h3>Dataset: </h3>
-                    This is where the dataset is introduced.
-                </div>
-                <div style={columnStyle}>
-                    <h3>Results:</h3>
-                    Some discussion of the results
-                </div>
+                Rocky planets similar to our Earth, are key candidates in the search for extraterrestrial life because of their ability to support conditions necessary for life as we know it -- liquid
+                water, a stable atmosphere and a diverse chemical composition. Whether these planets form, become habitable, and when they do, remain habitable for long enough for life to emerge 
+                and evolve depends on the mass of the host star, which is associated with characteristics such as the intensity of ionizing radiation, known to be very damaging to most lifeforms
+                familiar to us, as well as the star's lifetime, which sets natural boundaries for the existence of potential life within its system. Accurately estimating the masses of a large 
+                number of stars is therefore of great importance in efficiently directing our search for life among the stars.
             </div>
-            <References />
+            <References style={{ padding: '0.5em 1em' }}/>
         </div>
     )
 }

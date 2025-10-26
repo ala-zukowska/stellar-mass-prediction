@@ -1,3 +1,13 @@
+const graphPageStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '4em',
+    border: 'solid gray',
+    backgroundColor: 'lightgray'
+}
+
 const graphs_description = [
     {
         title: "Gaia and NEA Stellar Properties Comparison",
@@ -63,7 +73,7 @@ const GraphVisualisation = ({title, description, srcs = [], height = 700}) => {
 
 const Graphs = () => {
     return (
-        <div>
+        <div style={graphPageStyle}>
             <h1>Plots</h1>
             <p>
                 This page contains interactive graphs visualizing our stellar data, allowing you to explore 

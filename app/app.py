@@ -15,20 +15,7 @@ model = joblib.load("linear_model.pkl")
 def index():
     return app.send_static_file("index.html")
 
-@app.route("/predict", methods=["POST"])
-def predict():
-    data = request.get_json()
-    luminosity = data.get("luminosity")
-    metallicity = data.get("metallicity")
-    if luminosity is None or metallicity is None:
-        return jsonify({"error": "Missing parameters"}), 400
-    # The model expects the luminosity in log watts
-    log_watts = 26.583 + math.log10(luminosity)
-
-    X_new = pd.DataFrame([[log_watts, metallicity]], columns=["L", "met"])
-    prediction = model.predict(X_new)
-    prediction = 10**(float(prediction[0])) / M_sun.value
-
+def get_star_data():
     df = pd.read_csv("joined_out.csv")
     df = df.drop(columns=["met", "Teff", "R", "spectype"])
     df["M"] = 10**df["M"] / M_sun.value
@@ -46,9 +33,34 @@ def predict():
                  "Centerpiece of our Solar System",
                  "Our closest extrasolar neighbor"]
     })
+    return df, label_df
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    data = request.get_json()
+    luminosity = data.get("luminosity")
+    metallicity = data.get("metallicity")
+    if luminosity is None or metallicity is None:
+        return jsonify({"error": "Missing parameters"}), 400
+    # The model expects the luminosity in log watts
+    log_watts = 26.583 + math.log10(luminosity)
+
+    X_new = pd.DataFrame([[log_watts, metallicity]], columns=["L", "met"])
+    prediction = model.predict(X_new)
+    prediction = 10**(float(prediction[0])) / M_sun.value
+
+    df, label_df = get_star_data()
 
     return jsonify({
         "stars": df[["M", "L"]].to_dict(orient="records"),
         "labels": label_df.to_dict(orient="records"),
         "predicted": {"M": prediction, "L": luminosity }
         })
+
+@app.route("/graph_data", methods=["GET"])
+def get_graph():
+    df, label_df = get_star_data()
+    return jsonify({
+        "stars": df[["M", "L"]].to_dict(orient="records"),
+        "labels": label_df.to_dict(orient="records")
+    })

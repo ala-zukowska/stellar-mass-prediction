@@ -75,12 +75,12 @@ def _plot_categorical_plotly(df_categorical: pd.DataFrame, output_dir: str) -> N
             xaxis=dict(showticklabels=True),
             showlegend=False,
             margin=dict(l=20, r=20, t=40, b=20),
-            plot_bgcolor='white',
             width=750,
-            height=600
+            height=600,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color="#DDD")
         )
-        fig.update_xaxes(showgrid=False)
-        fig.update_yaxes(showgrid=False)
 
         fig.write_html(os.path.join(output_dir, f"categorical_{column}.html"))
 
@@ -139,11 +139,16 @@ def _plot_pairwise_plotly(df: pd.DataFrame, output_dir: str, hue_column: str | N
             fig.update_xaxes(autorange="reversed", row=row, col=col)
         
     fig.update_layout(
-        width=1000,
-        height=800,
+        width=900,
+        height=700,
         title_text="Pairwise Plots with Regression Lines",
-        title_x=0.5
+        title_x=0.5,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color="#DDD")
     )
+    fig.update_xaxes(showgrid=False, linecolor="#DDD", tickcolor="#DDD", gridcolor="#333")
+    fig.update_yaxes(showgrid=False, linecolor="#DDD", tickcolor="#DDD", gridcolor="#333")
 
     fig.write_html(os.path.join(output_dir, f"pairwise.html"))
 
@@ -165,7 +170,36 @@ def _plot_3d_scatter_plotly(df: pd.DataFrame, list_xyz: list[str], output_dir: s
         opacity=0.85
     )
     fig.update_traces(marker = dict(size = 3.5)) 
-    fig.update_layout(scene_camera = dict(eye = camera))
+    fig.update_layout(
+        scene_camera = dict(eye = camera),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color="#DDD")
+    )
+
+    fig.update_scenes(
+        xaxis=dict(
+            backgroundcolor='rgba(0,0,0,0)',
+            gridcolor="#333",
+            zerolinecolor="#DDD",
+            color="#DDD",
+            tickcolor="#DDD"
+        ),
+        yaxis=dict(
+            backgroundcolor='rgba(0,0,0,0)',
+            gridcolor="#333",
+            zerolinecolor="#DDD",
+            color="#DDD",
+            tickcolor="#DDD"
+        ),
+        zaxis=dict(
+            backgroundcolor='rgba(0,0,0,0)',
+            gridcolor="#333",
+            zerolinecolor="#DDD",
+            color="#DDD",
+            tickcolor="#DDD"
+        )
+    )
 
     fig.write_html(os.path.join(output_dir, f"3d_scatter_plot_{file_suffix}.html"))
 
@@ -182,10 +216,12 @@ def _check_coolinearity_plotly(df: pd.DataFrame, output_dir: str) -> None:
         title_x=0.5,
         xaxis_title="",
         yaxis_title="",
-        font=dict(size=16),
         coloraxis_colorbar=dict(x=1.05, y=0.5),
         width=750,
-        height=600 
+        height=600,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color="#DDD", size=16)
     )
 
     fig.write_html(os.path.join(output_dir, "collinearity.html"))
@@ -235,13 +271,18 @@ def compare_distributions_plotly(df: pd.DataFrame, features: list[str], output_d
         title_font_size=20,
         barmode='overlay',
         legend=dict(title="Source", font=dict(size=14)),
-        height=800,
-        width=1200
+        height=700,
+        width=1000,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color="#DDD")
     )
+    fig.update_xaxes(showgrid=False, linecolor="#DDD", tickcolor="#DDD", gridcolor="#333")
+    fig.update_yaxes(showgrid=False, linecolor="#DDD", tickcolor="#DDD", gridcolor="#333")
 
     fig.write_html(os.path.join(output_dir, "compare_before_join.html"))
 
 def _get_colors(categories: list[str]):
-    wong_palette = ["#f0e442", "#000000", "#56b4e9", "#e69f00", "#009e73", "#0072b2", "#d55e00", "#cc79a7"]
+    wong_palette = ["#f0e442", "#d55e00", "#56b4e9", "#e69f00", "#009e73", "#0072b2", "#cc79a7"]
     needed = len(categories)
     return wong_palette[:needed]

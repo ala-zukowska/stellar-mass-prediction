@@ -1,0 +1,30 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scrollbar-width: none;
+}
+
+body {
+  font-family: "Quattrocento Sans", sans-serif;
+  color: #DDD;
+  background-image: url('./assets/background.jpg');
+  background-size: cover;
+  background-position: top;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
+
+a:link {
+    color: #CE8236;
+    text-decoration: none;
+}
+
+a:visited {
+  color: #A1420C;
+}
+
+li {
+  margin: 10px 0;
+  color: #DDD;
+}

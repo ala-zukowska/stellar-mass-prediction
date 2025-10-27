@@ -1,48 +1,39 @@
+import './App.css'
 import { Button } from '@mui/material'
+import { createTheme } from '@mui/material/styles';
 import { Routes, Route, Link } from 'react-router-dom'
 import Predict from './components/predict'
 import Home from './components/home'
 import Graphs from './components/graphs'
 import Def from './components/definitions'
 
-const navBarStyle = {
-  display: 'flex',
-  flexDirection: 'row',
-  padding: 10,
-  gap: '1.5em',
-  alignItems: 'center',
-  justifyContent: 'center',
 
-}
+const theme = createTheme({
+  palette: {
+    ochre: {
+      main: '#CE8236',
+      light: '#DDD',
+      dark: '#A1420C',
+      contrastText: '#242105',
+    },
+  },
+});
 
-const headerStyle = {
-  display: 'flex',
-  justifyContent: 'center',
-  color: 'lightblue'
-}
-
-const barStyle = {
-  backgroundColor: 'navy',
-  display: 'flex',
-  flexDirection: 'column'
-}
-
-
-const NavBar = ({ style }) => {
+const NavBar = () => {
   return (
     <div>
-      <div style={style}>
+      <div className="nav-bar">
         <Link to="/">
-          <Button variant="contained">Home</Button>
+          <Button color="custom">Home</Button>
         </Link>
         <Link to="/predict">
-          <Button variant="contained">Predict</Button>
+          <Button color="custom">Predict</Button>
         </Link>
         <Link to="/graphs">
-          <Button variant="contained">Graphs</Button>
+          <Button color="custom">Graphs</Button>
         </Link>
         <Link to="/definitions">
-          <Button variant="contained">Definitions</Button>
+          <Button color="custom">Definitions</Button>
         </Link>
       </div>
     </div>
@@ -53,9 +44,9 @@ const App = () => {
 
   return (
     <>
-    <div style={barStyle}>
-      <h1 style={headerStyle}>Stellar Mass Prediction</h1>
-      <NavBar style={navBarStyle}></NavBar>
+    <div className="bar">
+      <h1 className="header">Stellar Mass Prediction</h1>
+      <NavBar/>
     </div>
 
     <Routes>

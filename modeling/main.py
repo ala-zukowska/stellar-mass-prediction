@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import re
 import joblib
+import mpld3
 
 # Helper function to process ids for cross-referencing
 def clean_ids(ids:np.ndarray):
@@ -98,11 +99,15 @@ def main():
 
     residuals = np.array(residuals)
 
-    plt.figure(figsize=(10,7))
+    fig = plt.figure(figsize=(8,5))
     plt.hist(residuals, bins=55)
     plt.title("Distribution of residuals")
     plt.xlabel("log(M) residual")
     plt.ylabel("frequency")
+    plt.show()
+    
+    with open(f"residuals.html", "w") as f:
+        f.write(mpld3.fig_to_html(fig))
     plt.show()
 
     print("Coefficient:", model.coef_)

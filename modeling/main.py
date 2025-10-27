@@ -101,6 +101,8 @@ def main():
     plt.figure(figsize=(10,7))
     plt.hist(residuals, bins=55)
     plt.title("Distribution of residuals")
+    plt.xlabel("log(M) residual")
+    plt.ylabel("frequency")
     plt.show()
 
     print("Coefficient:", model.coef_)

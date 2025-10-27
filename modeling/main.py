@@ -5,6 +5,7 @@ from pathlib import Path
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
+import matplotlib.pyplot as plt
 import numpy as np
 import re
 import joblib
@@ -69,12 +70,12 @@ def main():
     X = joined_df[["L", "met"]] 
     M = joined_df[["M"]]
 
-    X_train, X_test, M_train, M_test = train_test_split(X, M, test_size=0.25, random_state=1)
+    # X_train, X_test, M_train, M_test = train_test_split(X, M, test_size=0.25, random_state=1)
 
     model = LinearRegression()
 
-    model.fit(X_train, M_train)
-    M_pred = model.predict(X_test)
+    # model.fit(X_train, M_train)
+    # M_pred = model.predict(X_test)
 
     joblib.dump(model, "linear_model.pkl")
 
@@ -83,9 +84,28 @@ def main():
     r2 = np.mean(cross_val_score(model, X, M, scoring='r2', cv=cv))
     mse = -np.mean(cross_val_score(model, X, M, scoring='neg_mean_squared_error', cv=cv))
     
+    residuals = []
+
+    for train_i, test_i in cv.split(X):
+        X_train, X_test = X.to_numpy()[train_i], X.to_numpy()[test_i]
+        M_train, M_test = M.to_numpy()[train_i], M.to_numpy()[test_i]
+        
+        model.fit(X_train, M_train)
+        M_pred = model.predict(X_test)
+        
+        res = M_test - M_pred
+        residuals.extend(res)
+
+    residuals = np.array(residuals)
+
+    plt.figure(figsize=(10,7))
+    plt.hist(residuals, bins=55)
+    plt.title("Distribution of residuals")
+    plt.show()
+
     print("Coefficient:", model.coef_)
     print("Intercept:", model.intercept_)
-    print(f"Using regular split: \nMSE={mean_squared_error(M_test, M_pred):.3f} \nr2={r2_score(M_test, M_pred):.3f}")
+    # print(f"Using regular split: \nMSE={mean_squared_error(M_test, M_pred):.3f} \nr2={r2_score(M_test, M_pred):.3f}")
     print(f"Cross validation: \nMSE={mse:.3f}, r2={r2:.3f}")
 
 
